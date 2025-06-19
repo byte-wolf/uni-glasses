@@ -1,5 +1,6 @@
 import type { HttpServer, ViteDevServer } from 'vite';
 import { Server, type Socket } from 'socket.io';
+import type { DisplayData } from '$lib/types';
 
 const webSocketServer = {
     name: 'webSocketServer',
@@ -15,8 +16,8 @@ function injectSocketIO(server: HttpServer | null) {
 
     io.on('connection', (socket) => {
 
-        socket.on('text-update', (text: string) => {
-            io.emit('text-update', text);
+        socket.on('text-update', (data: DisplayData) => {
+            io.emit('text-update', data);
         });
     });
 

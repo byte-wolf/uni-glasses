@@ -2,10 +2,13 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { io } from 'socket.io-client';
+	import type { DisplayData } from '$lib/types';
 
 	const socket = io();
 
 	let displayText = $state('Connecting...');
+	let textColor = $state('#ffffff');
+	let backgroundColor = $state('#1f2937');
 	let connectionStatus = $state('connecting');
 	let reconnectAttempts = $state(0);
 	let maxReconnectAttempts = 5;
@@ -20,8 +23,10 @@
 				reconnectAttempts = 0;
 			});
 
-			socket.on('text-update', (text: string) => {
-				displayText = text;
+			socket.on('text-update', (data: DisplayData) => {
+				displayText = data.content;
+				textColor = data.textColor;
+				backgroundColor = data.backgroundColor;
 			});
 
 			socket.on('disconnect', () => {
@@ -57,6 +62,8 @@
 			.then((data) => {
 				if (data.content) {
 					displayText = data.content;
+					textColor = data.textColor || '#ffffff';
+					backgroundColor = data.backgroundColor || '#1f2937';
 				}
 			})
 			.catch((error) => {
@@ -135,9 +142,12 @@
 
 	<!-- Main Display Area -->
 	<main class="flex flex-1 items-center justify-center p-8">
-		<div class="w-full max-w-4xl text-center">
-			<div class="rounded-xl border border-gray-700 bg-gray-800 p-12 shadow-2xl">
-				<div class="text-4xl leading-tight font-bold md:text-6xl lg:text-7xl">
+		<div class="max-w-4xl text-center">
+			<div class="px-8 py-2 shadow-2xl" style="background-color: {backgroundColor};">
+				<div
+					class="text-4xl leading-tight font-bold md:text-6xl lg:text-7xl"
+					style="color: {textColor};"
+				>
 					{displayText}
 				</div>
 			</div>

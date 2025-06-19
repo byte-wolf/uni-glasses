@@ -2,11 +2,16 @@
 	import { io } from 'socket.io-client';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import type { DisplayData } from '$lib/types';
 
 	const socket = io();
 
 	let currentText = $state('');
+	let currentTextColor = $state('#ffffff');
+	let currentBackgroundColor = $state('#1f2937');
 	let newText = $state('');
+	let newTextColor = $state('#ffffff');
+	let newBackgroundColor = $state('#1f2937');
 	let isSaving = $state(false);
 	let saveStatus = $state('');
 	let lastUpdated = $state('');
@@ -16,7 +21,11 @@
 			const response = await fetch('/api/text');
 			const data = await response.json();
 			currentText = data.content || '';
+			currentTextColor = data.textColor || '#ffffff';
+			currentBackgroundColor = data.backgroundColor || '#1f2937';
 			newText = currentText;
+			newTextColor = currentTextColor;
+			newBackgroundColor = currentBackgroundColor;
 			lastUpdated = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : '';
 		} catch (error) {
 			console.error('Failed to load current text:', error);
@@ -31,19 +40,27 @@
 		saveStatus = 'Saving...';
 
 		try {
-			socket.emit('text-update', newText.trim());
+			const updateData: DisplayData = {
+				content: newText.trim(),
+				textColor: newTextColor,
+				backgroundColor: newBackgroundColor
+			};
+
+			socket.emit('text-update', updateData);
 
 			const response = await fetch('/api/text', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ content: newText.trim() })
+				body: JSON.stringify(updateData)
 			});
 
 			if (response.ok) {
 				const data = await response.json();
 				currentText = data.content;
+				currentTextColor = data.textColor;
+				currentBackgroundColor = data.backgroundColor;
 				lastUpdated = new Date(data.updatedAt).toLocaleString();
 				saveStatus = 'Text updated successfully!';
 				setTimeout(() => (saveStatus = ''), 3000);
@@ -67,13 +84,21 @@
 			updateText();
 		}
 	}
+
+	function hasChanges() {
+		return (
+			newText.trim() !== currentText ||
+			newTextColor !== currentTextColor ||
+			newBackgroundColor !== currentBackgroundColor
+		);
+	}
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
 	<!-- Header -->
 	<header class="border-b border-gray-200 bg-white p-4 shadow-sm">
 		<div class="mx-auto flex max-w-6xl items-center justify-between">
-			<h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
+			<h1 class="text-2xl font-bold text-gray-800">Wizard of Oz</h1>
 			<div class="flex items-center gap-4">
 				<span class="text-sm text-gray-600">
 					{lastUpdated ? `Last updated: ${lastUpdated}` : ''}
@@ -94,16 +119,19 @@
 			<div class="mb-6">
 				<h2 class="mb-2 text-xl font-semibold text-gray-800">Display Text Management</h2>
 				<p class="text-gray-600">
-					Update the text that customers see on their display screens. Changes are pushed instantly
-					via WebSocket.
+					Update the text, color, and background color that customers see on their display screens.
+					Changes are pushed instantly via WebSocket.
 				</p>
 			</div>
 
 			<!-- Current Text Display -->
 			<div class="mb-6">
-				<label class="mb-2 block text-sm font-medium text-gray-700">Current Display Text:</label>
-				<div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-					<div class="text-lg font-medium text-gray-800">
+				<label class="mb-2 block text-sm font-medium text-gray-700">Current Display:</label>
+				<div
+					class="rounded-lg border border-gray-200 p-4"
+					style="background-color: {currentBackgroundColor};"
+				>
+					<div class="text-lg font-medium" style="color: {currentTextColor};">
 						{currentText || 'No text set'}
 					</div>
 				</div>
@@ -127,19 +155,83 @@
 				</div>
 			</div>
 
+			<!-- Color Controls -->
+			<div class="mb-6 grid gap-4 md:grid-cols-2">
+				<div>
+					<label for="textColor" class="mb-2 block text-sm font-medium text-gray-700">
+						Text Color:
+					</label>
+					<div class="flex items-center gap-3">
+						<input
+							id="textColor"
+							type="color"
+							bind:value={newTextColor}
+							disabled={isSaving}
+							class="h-10 w-16 cursor-pointer rounded-lg border border-gray-300 disabled:cursor-not-allowed"
+						/>
+						<input
+							type="text"
+							bind:value={newTextColor}
+							disabled={isSaving}
+							pattern="^#[0-9A-Fa-f]{6}$"
+							placeholder="#ffffff"
+							class="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-green-500 focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<label for="backgroundColor" class="mb-2 block text-sm font-medium text-gray-700">
+						Background Color:
+					</label>
+					<div class="flex items-center gap-3">
+						<input
+							id="backgroundColor"
+							type="color"
+							bind:value={newBackgroundColor}
+							disabled={isSaving}
+							class="h-10 w-16 cursor-pointer rounded-lg border border-gray-300 disabled:cursor-not-allowed"
+						/>
+						<input
+							type="text"
+							bind:value={newBackgroundColor}
+							disabled={isSaving}
+							pattern="^#[0-9A-Fa-f]{6}$"
+							placeholder="#1f2937"
+							class="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-green-500 focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+						/>
+					</div>
+				</div>
+			</div>
+
+			<!-- Preview -->
+			<div class="mb-6">
+				<label class="mb-2 block text-sm font-medium text-gray-700">Preview:</label>
+				<div
+					class="rounded-lg border border-gray-200 p-4"
+					style="background-color: {newBackgroundColor};"
+				>
+					<div class="text-lg font-medium" style="color: {newTextColor};">
+						{newText || 'Enter text above to see preview'}
+					</div>
+				</div>
+			</div>
+
 			<!-- Action Buttons -->
 			<div class="mb-4 flex gap-3">
 				<button
 					onclick={updateText}
-					disabled={isSaving || newText.trim() === '' || newText.trim() === currentText}
+					disabled={isSaving || newText.trim() === '' || !hasChanges()}
 					class="flex-1 rounded-lg bg-green-600 px-6 py-3 font-medium text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300"
 				>
-					{isSaving ? 'Updating...' : 'Update Display Text'}
+					{isSaving ? 'Updating...' : 'Update Display'}
 				</button>
 
 				<button
 					onclick={() => {
 						newText = currentText;
+						newTextColor = currentTextColor;
+						newBackgroundColor = currentBackgroundColor;
 						saveStatus = '';
 					}}
 					disabled={isSaving}
