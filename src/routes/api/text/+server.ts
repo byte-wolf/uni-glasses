@@ -41,6 +41,7 @@ export const GET: RequestHandler = async () => {
 					content: newDisplayRecord[0].content,
 					textColor: defaultPreset[0].textColor,
 					backgroundColor: defaultPreset[0].backgroundColor,
+					fontSize: defaultPreset[0].fontSize,
 					updatedAt: newDisplayRecord[0].updatedAt
 				});
 			} else {
@@ -65,6 +66,7 @@ export const GET: RequestHandler = async () => {
 					content: newDisplayRecord[0].content,
 					textColor: firstPreset[0].textColor,
 					backgroundColor: firstPreset[0].backgroundColor,
+					fontSize: firstPreset[0].fontSize,
 					updatedAt: newDisplayRecord[0].updatedAt
 				});
 			}
@@ -93,6 +95,7 @@ export const GET: RequestHandler = async () => {
 					content: displayRecord[0].content,
 					textColor: firstPreset[0].textColor,
 					backgroundColor: firstPreset[0].backgroundColor,
+					fontSize: firstPreset[0].fontSize,
 					updatedAt: displayRecord[0].updatedAt
 				});
 			}
@@ -102,6 +105,7 @@ export const GET: RequestHandler = async () => {
 			content: displayRecord[0].content,
 			textColor: activePreset[0].textColor,
 			backgroundColor: activePreset[0].backgroundColor,
+			fontSize: activePreset[0].fontSize,
 			updatedAt: displayRecord[0].updatedAt
 		});
 	} catch (error) {
@@ -112,7 +116,7 @@ export const GET: RequestHandler = async () => {
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const { content, textColor, backgroundColor } = await request.json();
+		const { content, textColor, backgroundColor, fontSize } = await request.json();
 
 		if (!content || typeof content !== 'string') {
 			return json({ error: 'Content is required and must be a string' }, { status: 400 });
@@ -158,6 +162,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			content: result[0].content,
 			textColor: activePreset[0].textColor,
 			backgroundColor: activePreset[0].backgroundColor,
+			fontSize: activePreset[0].fontSize,
 			updatedAt: result[0].updatedAt
 		});
 	} catch (error) {

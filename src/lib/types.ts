@@ -2,6 +2,7 @@ export interface DisplayData {
 	content: string;
 	textColor: string;
 	backgroundColor: string;
+	fontSize: number; // Font size in pixels, reasonable range: 16-120
 }
 
 export interface DisplayResponse extends DisplayData {
@@ -13,6 +14,7 @@ export interface PresetData {
 	name: string;
 	textColor: string;
 	backgroundColor: string;
+	fontSize: number; // Font size in pixels, reasonable range: 16-120
 	isActive?: boolean;
 }
 

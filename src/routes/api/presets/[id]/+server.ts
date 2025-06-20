@@ -32,7 +32,8 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			return json({ error: 'Invalid preset ID' }, { status: 400 });
 		}
 
-		const { name, textColor, backgroundColor, isActive }: PresetData = await request.json();
+		const { name, textColor, backgroundColor, fontSize, isActive }: PresetData =
+			await request.json();
 
 		if (!name || typeof name !== 'string') {
 			return json({ error: 'Name is required and must be a string' }, { status: 400 });
@@ -44,6 +45,9 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		const finalTextColor = textColor && isValidColor(textColor) ? textColor : '#ffffff';
 		const finalBackgroundColor =
 			backgroundColor && isValidColor(backgroundColor) ? backgroundColor : '#1f2937';
+		// Validate fontSize to be within reasonable bounds (16-120px)
+		const finalFontSize =
+			fontSize && typeof fontSize === 'number' && fontSize >= 16 && fontSize <= 120 ? fontSize : 48;
 
 		// If this preset is being set as active, deactivate all other presets
 		if (isActive) {
@@ -56,6 +60,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 				name: name.trim(),
 				textColor: finalTextColor,
 				backgroundColor: finalBackgroundColor,
+				fontSize: finalFontSize,
 				isActive: isActive ?? false,
 				updatedAt: new Date()
 			})

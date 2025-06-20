@@ -10,6 +10,7 @@ export const presets = sqliteTable('presets', {
 	name: text('name').notNull(),
 	textColor: text('text_color').notNull().default('#ffffff'),
 	backgroundColor: text('background_color').notNull().default('#1f2937'),
+	fontSize: integer('font_size').notNull().default(48),
 	isActive: integer('is_active', { mode: 'boolean' }).notNull().default(false),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()

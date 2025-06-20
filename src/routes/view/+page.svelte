@@ -9,6 +9,7 @@
 	let displayText = $state('Connecting...');
 	let textColor = $state('#ffffff');
 	let backgroundColor = $state('#1f2937');
+	let fontSize = $state(48);
 	let connectionStatus = $state('connecting');
 	let reconnectAttempts = $state(0);
 	let maxReconnectAttempts = 5;
@@ -27,6 +28,7 @@
 				displayText = data.content;
 				textColor = data.textColor;
 				backgroundColor = data.backgroundColor;
+				fontSize = data.fontSize || 48;
 			});
 
 			socket.on('disconnect', () => {
@@ -64,6 +66,7 @@
 					displayText = data.content;
 					textColor = data.textColor || '#ffffff';
 					backgroundColor = data.backgroundColor || '#1f2937';
+					fontSize = data.fontSize || 48;
 				}
 			})
 			.catch((error) => {
@@ -144,20 +147,10 @@
 	<main class="flex flex-1 items-center justify-center p-8">
 		<div class="max-w-4xl text-center">
 			<div class="px-8 py-2 shadow-2xl" style="background-color: {backgroundColor};">
-				<div
-					class="text-4xl leading-tight font-bold md:text-6xl lg:text-7xl"
-					style="color: {textColor};"
-				>
+				<div class="leading-tight font-bold" style="color: {textColor}; font-size: {fontSize}px;">
 					{displayText}
 				</div>
 			</div>
 		</div>
 	</main>
-
-	<!-- Footer -->
-	<footer class="border-t border-gray-700 bg-gray-800 p-4">
-		<div class="mx-auto max-w-6xl text-center text-sm text-gray-400">
-			Displaying real-time content • Updates automatically when changed by administrators
-		</div>
-	</footer>
 </div>

@@ -9,9 +9,11 @@
 	let currentText = $state('');
 	let currentTextColor = $state('#ffffff');
 	let currentBackgroundColor = $state('#1f2937');
+	let currentFontSize = $state(48);
 	let newText = $state('');
 	let newTextColor = $state('#ffffff');
 	let newBackgroundColor = $state('#1f2937');
+	let newFontSize = $state(48);
 	let isSaving = $state(false);
 	let saveStatus = $state('');
 	let lastUpdated = $state('');
@@ -34,9 +36,11 @@
 			currentText = data.content || '';
 			currentTextColor = data.textColor || '#ffffff';
 			currentBackgroundColor = data.backgroundColor || '#1f2937';
+			currentFontSize = data.fontSize || 48;
 			newText = currentText;
 			newTextColor = currentTextColor;
 			newBackgroundColor = currentBackgroundColor;
+			newFontSize = currentFontSize;
 			lastUpdated = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : '';
 		} catch (error) {
 			console.error('Failed to load current text:', error);
@@ -57,6 +61,7 @@
 				displaySettingsName = activePreset.name;
 				newTextColor = activePreset.textColor;
 				newBackgroundColor = activePreset.backgroundColor;
+				newFontSize = activePreset.fontSize || 48;
 			}
 		} catch (error) {
 			console.error('Failed to load presets:', error);
@@ -73,7 +78,8 @@
 			const updateData: DisplayData = {
 				content: newText.trim(),
 				textColor: newTextColor,
-				backgroundColor: newBackgroundColor
+				backgroundColor: newBackgroundColor,
+				fontSize: newFontSize
 			};
 
 			socket.emit('text-update', updateData);
@@ -102,15 +108,18 @@
 				if (data.isActive) {
 					currentTextColor = data.textColor;
 					currentBackgroundColor = data.backgroundColor;
+					currentFontSize = data.fontSize || 48;
 					newTextColor = data.textColor;
 					newBackgroundColor = data.backgroundColor;
+					newFontSize = data.fontSize || 48;
 					lastUpdated = new Date(data.updatedAt).toLocaleString();
 
 					// Emit WebSocket update with current text and new styling
 					socket.emit('text-update', {
 						content: currentText,
 						textColor: data.textColor,
-						backgroundColor: data.backgroundColor
+						backgroundColor: data.backgroundColor,
+						fontSize: data.fontSize || 48
 					});
 				}
 			} else {
@@ -142,8 +151,10 @@
 				// Update current display colors (text content stays the same)
 				currentTextColor = data.textColor;
 				currentBackgroundColor = data.backgroundColor;
+				currentFontSize = data.fontSize || 48;
 				newTextColor = data.textColor;
 				newBackgroundColor = data.backgroundColor;
+				newFontSize = data.fontSize || 48;
 				displaySettingsName = data.name;
 				lastUpdated = new Date(data.updatedAt).toLocaleString();
 
@@ -151,7 +162,8 @@
 				socket.emit('text-update', {
 					content: currentText,
 					textColor: data.textColor,
-					backgroundColor: data.backgroundColor
+					backgroundColor: data.backgroundColor,
+					fontSize: data.fontSize || 48
 				});
 
 				saveStatus = `Preset "${data.name}" activated!`;
@@ -187,6 +199,7 @@
 		// Set default colors for new preset
 		newTextColor = '#ffffff';
 		newBackgroundColor = '#1f2937';
+		newFontSize = 48;
 	}
 
 	function openEditPresetModal(preset: PresetResponse) {
@@ -206,6 +219,7 @@
 				name: displaySettingsName.trim(),
 				textColor: newTextColor,
 				backgroundColor: newBackgroundColor,
+				fontSize: newFontSize,
 				isActive: true // Keep it active since we're editing the active preset
 			};
 
@@ -225,13 +239,15 @@
 				// Update current display colors
 				currentTextColor = data.textColor;
 				currentBackgroundColor = data.backgroundColor;
+				currentFontSize = data.fontSize || 48;
 				lastUpdated = new Date(data.updatedAt).toLocaleString();
 
 				// Emit WebSocket update with current text and new styling
 				socket.emit('text-update', {
 					content: currentText,
 					textColor: data.textColor,
-					backgroundColor: data.backgroundColor
+					backgroundColor: data.backgroundColor,
+					fontSize: data.fontSize || 48
 				});
 
 				// Reload presets
@@ -249,6 +265,7 @@
 			displaySettingsName = activePreset.name;
 			newTextColor = activePreset.textColor;
 			newBackgroundColor = activePreset.backgroundColor;
+			newFontSize = activePreset.fontSize || 48;
 		}
 	}
 
@@ -260,6 +277,7 @@
 				name: newPresetName.trim(),
 				textColor: newTextColor,
 				backgroundColor: newBackgroundColor,
+				fontSize: newFontSize,
 				isActive: isCreatingPreset
 			};
 
@@ -284,15 +302,18 @@
 				if (data.isActive) {
 					currentTextColor = data.textColor;
 					currentBackgroundColor = data.backgroundColor;
+					currentFontSize = data.fontSize || 48;
 					newTextColor = data.textColor;
 					newBackgroundColor = data.backgroundColor;
+					newFontSize = data.fontSize || 48;
 					lastUpdated = new Date(data.updatedAt).toLocaleString();
 
 					// Emit WebSocket update with current text and new styling
 					socket.emit('text-update', {
 						content: currentText,
 						textColor: data.textColor,
-						backgroundColor: data.backgroundColor
+						backgroundColor: data.backgroundColor,
+						fontSize: data.fontSize || 48
 					});
 				}
 			}
@@ -336,7 +357,8 @@
 		return (
 			newText.trim() !== currentText ||
 			newTextColor !== currentTextColor ||
-			newBackgroundColor !== currentBackgroundColor
+			newBackgroundColor !== currentBackgroundColor ||
+			newFontSize !== currentFontSize
 		);
 	}
 </script>
@@ -516,6 +538,22 @@
 									</div>
 								</div>
 							</div>
+							<div class="mb-3">
+								<label class="mb-1 block text-sm font-medium text-gray-700">Font Size (px):</label>
+								<input
+									type="range"
+									min="16"
+									max="120"
+									step="2"
+									bind:value={newFontSize}
+									class="w-full cursor-pointer"
+								/>
+								<div class="flex justify-between text-xs text-gray-500">
+									<span>16px</span>
+									<span>{newFontSize}px</span>
+									<span>120px</span>
+								</div>
+							</div>
 							<div class="flex gap-2">
 								<button
 									onclick={savePreset}
@@ -562,7 +600,10 @@
 								class="rounded-lg border border-gray-200 p-4"
 								style="background-color: {currentBackgroundColor};"
 							>
-								<div class="text-lg font-medium" style="color: {currentTextColor};">
+								<div
+									class="font-medium"
+									style="color: {currentTextColor}; font-size: {currentFontSize}px;"
+								>
 									{currentText || 'No text set'}
 								</div>
 							</div>
@@ -593,7 +634,10 @@
 								class="rounded-lg border border-gray-200 p-4"
 								style="background-color: {currentBackgroundColor};"
 							>
-								<div class="text-lg font-medium" style="color: {currentTextColor};">
+								<div
+									class="font-medium"
+									style="color: {currentTextColor}; font-size: {currentFontSize}px;"
+								>
 									{newText || 'Enter text above to see preview'}
 								</div>
 							</div>
@@ -612,6 +656,9 @@
 							<button
 								onclick={() => {
 									newText = currentText;
+									newTextColor = currentTextColor;
+									newBackgroundColor = currentBackgroundColor;
+									newFontSize = currentFontSize;
 									saveStatus = '';
 								}}
 								disabled={isSaving}
@@ -700,6 +747,27 @@
 								</div>
 							</div>
 
+							<!-- Font Size Control -->
+							<div class="mb-6">
+								<label for="settingsFontSize" class="mb-2 block text-sm font-medium text-gray-700">
+									Font Size:
+								</label>
+								<input
+									id="settingsFontSize"
+									type="range"
+									min="16"
+									max="120"
+									step="2"
+									bind:value={newFontSize}
+									class="w-full cursor-pointer"
+								/>
+								<div class="flex justify-between text-xs text-gray-500">
+									<span>16px</span>
+									<span class="font-medium">{newFontSize}px</span>
+									<span>120px</span>
+								</div>
+							</div>
+
 							<!-- Settings Preview -->
 							<div class="mb-6">
 								<label class="mb-2 block text-sm font-medium text-gray-700">Preview:</label>
@@ -707,7 +775,10 @@
 									class="rounded-lg border border-gray-200 p-4"
 									style="background-color: {newBackgroundColor};"
 								>
-									<div class="text-lg font-medium" style="color: {newTextColor};">
+									<div
+										class="font-medium"
+										style="color: {newTextColor}; font-size: {newFontSize}px;"
+									>
 										{currentText || 'Sample text preview'}
 									</div>
 								</div>
