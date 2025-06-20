@@ -5,10 +5,25 @@ export const user = sqliteTable('user', {
 	age: integer('age')
 });
 
+export const presets = sqliteTable('presets', {
+	id: integer('id').primaryKey(),
+	name: text('name').notNull(),
+	textColor: text('text_color').notNull().default('#ffffff'),
+	backgroundColor: text('background_color').notNull().default('#1f2937'),
+	isActive: integer('is_active', { mode: 'boolean' }).notNull().default(false),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.notNull()
+		.$defaultFn(() => new Date()),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.notNull()
+		.$defaultFn(() => new Date())
+});
+
 export const displayText = sqliteTable('display_text', {
 	id: integer('id').primaryKey(),
 	content: text('content').notNull().default('Welcome to our display system!'),
-	textColor: text('text_color').notNull().default('#ffffff'),
-	backgroundColor: text('background_color').notNull().default('#1f2937'),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date())
+	activePresetId: integer('active_preset_id').references(() => presets.id),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.notNull()
+		.$defaultFn(() => new Date())
 });
