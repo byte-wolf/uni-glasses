@@ -11,6 +11,7 @@
 	let backgroundColor = $state('#1f2937');
 	let fontSize = $state(48);
 	let textPosition = $state({ x: 0, y: 0 });
+	let isPoweredOn = $state(true);
 	let connectionStatus = $state('connecting');
 	let reconnectAttempts = $state(0);
 	let maxReconnectAttempts = 5;
@@ -32,7 +33,12 @@
 				backgroundColor = data.backgroundColor;
 				fontSize = data.fontSize || 48;
 				textPosition = data.textPosition || { x: 0, y: 0 };
+				isPoweredOn = data.isPoweredOn !== undefined ? data.isPoweredOn : true;
 				console.log('textPosition', textPosition);
+			});
+
+			socket.on('toggle-power', (data: { isPoweredOn: boolean }) => {
+				isPoweredOn = data.isPoweredOn;
 			});
 
 			socket.on('disconnect', () => {
@@ -72,6 +78,7 @@
 					backgroundColor = data.backgroundColor || '#1f2937';
 					fontSize = data.fontSize || 48;
 					textPosition = data.textPosition || { x: 0, y: 0 };
+					isPoweredOn = data.isPoweredOn !== undefined ? data.isPoweredOn : true;
 				}
 			})
 			.catch((error) => {
@@ -190,20 +197,27 @@
 	</header>
 
 	<!-- Main Display Area -->
-	<main class="relative flex-1 overflow-hidden">
-		<div
-			bind:this={textElement}
-			class="absolute"
-			style="left: 50%; top: 50%; transform: translate(-50%, -50%);"
-		>
-			<div class="px-8 py-2 shadow-2xl" style="background-color: {backgroundColor};">
-				<div
-					class="leading-tight font-bold whitespace-nowrap"
-					style="color: {textColor}; font-size: {fontSize}px;"
-				>
-					{displayText}
+	<main
+		class="relative flex-1 overflow-hidden"
+		style="background-color: {isPoweredOn ? 'transparent' : '#000000'};"
+	>
+		{#if isPoweredOn}
+			<div
+				bind:this={textElement}
+				class="absolute"
+				style="left: 50%; top: 50%; transform: translate(-50%, -50%);"
+			>
+				<div class="px-8 py-2 shadow-2xl" style="background-color: {backgroundColor};">
+					<div
+						class="leading-tight font-bold whitespace-nowrap"
+						style="color: {textColor}; font-size: {fontSize}px;"
+					>
+						{displayText}
+					</div>
 				</div>
 			</div>
-		</div>
+		{:else}
+			<div class="absolute inset-0 bg-black"></div>
+		{/if}
 	</main>
 </div>

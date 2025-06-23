@@ -4,6 +4,7 @@ export interface DisplayData {
 	backgroundColor: string;
 	fontSize: number; // Font size in pixels, reasonable range: 16-120
 	textPosition?: { x: number; y: number }; // Text position relative to center (x: -100 to 100, y: -100 to 100)
+	isPoweredOn?: boolean; // Whether the display is powered on or off
 }
 
 export interface DisplayResponse extends DisplayData {

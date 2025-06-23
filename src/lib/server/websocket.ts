@@ -3,25 +3,28 @@ import { Server, type Socket } from 'socket.io';
 import type { DisplayData } from '$lib/types';
 
 const webSocketServer = {
-    name: 'webSocketServer',
-    configureServer(server: ViteDevServer) {
-        injectSocketIO(server.httpServer);
-    }
+	name: 'webSocketServer',
+	configureServer(server: ViteDevServer) {
+		injectSocketIO(server.httpServer);
+	}
 };
 
 function injectSocketIO(server: HttpServer | null) {
-    if (!server) return;
+	if (!server) return;
 
-    const io = new Server(server);
+	const io = new Server(server);
 
-    io.on('connection', (socket) => {
+	io.on('connection', (socket) => {
+		socket.on('text-update', (data: DisplayData) => {
+			io.emit('text-update', data);
+		});
 
-        socket.on('text-update', (data: DisplayData) => {
-            io.emit('text-update', data);
-        });
-    });
+		socket.on('toggle-power', (data: { isPoweredOn: boolean }) => {
+			io.emit('toggle-power', data);
+		});
+	});
 
-    console.log('SocketIO injected');
+	console.log('SocketIO injected');
 }
 
 export { webSocketServer };

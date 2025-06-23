@@ -3,6 +3,11 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import type { DisplayData, PresetData, PresetResponse } from '$lib/types';
+	import PowerIcon from '@lucide/svelte/icons/power';
+	import StepBackIcon from '@lucide/svelte/icons/step-back';
+	import StepForwardIcon from '@lucide/svelte/icons/step-forward';
+	import PlusIcon from '@lucide/svelte/icons/plus';
+	import MinusIcon from '@lucide/svelte/icons/minus';
 
 	const socket = io();
 
@@ -11,6 +16,7 @@
 	let currentBackgroundColor = $state('#1f2937');
 	let currentFontSize = $state(48);
 	let currentTextPosition = $state({ x: 0, y: 0 });
+	let isPoweredOn = $state(true);
 	let newText = $state('');
 	let newTextColor = $state('#ffffff');
 	let newBackgroundColor = $state('#1f2937');
@@ -40,6 +46,7 @@
 			currentBackgroundColor = data.backgroundColor || '#1f2937';
 			currentFontSize = data.fontSize || 48;
 			currentTextPosition = data.textPosition || { x: 0, y: 0 };
+			isPoweredOn = data.isPoweredOn !== undefined ? data.isPoweredOn : true;
 			newText = currentText;
 			newTextColor = currentTextColor;
 			newBackgroundColor = currentBackgroundColor;
@@ -87,7 +94,8 @@
 				textColor: newTextColor,
 				backgroundColor: newBackgroundColor,
 				fontSize: newFontSize,
-				textPosition: newTextPosition
+				textPosition: newTextPosition,
+				isPoweredOn
 			};
 
 			socket.emit('text-update', updateData);
@@ -132,7 +140,8 @@
 						textColor: data.textColor,
 						backgroundColor: data.backgroundColor,
 						fontSize: data.fontSize || 48,
-						textPosition: data.textPosition || { x: 0, y: 0 }
+						textPosition: data.textPosition || { x: 0, y: 0 },
+						isPoweredOn
 					});
 				}
 			} else {
@@ -179,7 +188,8 @@
 					textColor: data.textColor,
 					backgroundColor: data.backgroundColor,
 					fontSize: data.fontSize || 48,
-					textPosition: data.textPosition || { x: 0, y: 0 }
+					textPosition: data.textPosition || { x: 0, y: 0 },
+					isPoweredOn
 				});
 
 				saveStatus = `Preset "${data.name}" activated!`;
@@ -268,7 +278,8 @@
 					textColor: data.textColor,
 					backgroundColor: data.backgroundColor,
 					fontSize: data.fontSize || 48,
-					textPosition: data.textPosition || { x: 0, y: 0 }
+					textPosition: data.textPosition || { x: 0, y: 0 },
+					isPoweredOn
 				});
 
 				// Reload presets
@@ -339,7 +350,8 @@
 						textColor: data.textColor,
 						backgroundColor: data.backgroundColor,
 						fontSize: data.fontSize || 48,
-						textPosition: data.textPosition || { x: 0, y: 0 }
+						textPosition: data.textPosition || { x: 0, y: 0 },
+						isPoweredOn
 					});
 				}
 			}
@@ -389,6 +401,31 @@
 			newTextPosition.y !== currentTextPosition.y
 		);
 	}
+
+	function increaseFontSize(polarity: number = 1) {
+		newFontSize += polarity * 8;
+		saveDisplaySettings();
+	}
+
+	function togglePower() {
+		isPoweredOn = !isPoweredOn;
+
+		// Emit WebSocket update immediately
+		socket.emit('toggle-power', { isPoweredOn });
+
+		// Also emit text-update with current content and power state
+		socket.emit('text-update', {
+			content: currentText,
+			textColor: currentTextColor,
+			backgroundColor: currentBackgroundColor,
+			fontSize: currentFontSize,
+			textPosition: currentTextPosition,
+			isPoweredOn
+		});
+
+		saveStatus = isPoweredOn ? 'Display powered on!' : 'Display powered off!';
+		setTimeout(() => (saveStatus = ''), 2000);
+	}
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
@@ -413,8 +450,64 @@
 	<!-- Main Content -->
 	<main class="mx-auto max-w-6xl p-6">
 		<div class="grid gap-6 lg:grid-cols-3">
-			<!-- Preset Management Panel -->
-			<div class="lg:col-span-1">
+			<!-- Quick Settings -->
+			<div class="space-y-4 lg:col-span-1">
+				<div class="rounded-xl bg-white p-6 shadow-lg">
+					<div class="mb-6">
+						<h2 class="mb-2 text-xl font-semibold text-gray-800">Quick Settings</h2>
+						<p class="text-sm text-gray-600">Changes here get directly applied to the display.</p>
+					</div>
+
+					<div class="flex items-center gap-4">
+						<button
+							onclick={togglePower}
+							class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50 {isPoweredOn
+								? 'border-green-300 bg-green-50 text-green-700'
+								: 'border-red-300 bg-red-50 text-red-700'}"
+							title={isPoweredOn ? 'Power Off Display' : 'Power On Display'}
+						>
+							<PowerIcon class="size-6" />
+						</button>
+
+						<div class="flex items-center gap-2">
+							<button
+								onclick={() => cyclePreset('prev')}
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								title="Previous Preset"
+							>
+								<StepBackIcon class="size-6" />
+							</button>
+
+							<button
+								onclick={() => cyclePreset('next')}
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								title="Next Preset"
+							>
+								<StepForwardIcon class="size-6" />
+							</button>
+						</div>
+
+						<div class="flex items-center gap-2">
+							<button
+								onclick={() => increaseFontSize(1)}
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								title="Increase Font Size"
+							>
+								<PlusIcon class="size-6" />
+							</button>
+
+							<button
+								onclick={() => increaseFontSize(-1)}
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								title="Decrease Font Size"
+							>
+								<MinusIcon class="size-6" />
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Preset Management Panel -->
 				<div class="rounded-xl bg-white p-6 shadow-lg">
 					<div class="mb-6">
 						<h2 class="mb-2 text-xl font-semibold text-gray-800">Preset Management</h2>
@@ -998,8 +1091,10 @@
 				<h3 class="mb-3 text-lg font-semibold text-gray-800">System Info</h3>
 				<div class="space-y-2 text-sm">
 					<div class="flex justify-between">
-						<span class="text-gray-600">Status:</span>
-						<span class="font-medium text-green-600">Active</span>
+						<span class="text-gray-600">Display Power:</span>
+						<span class="font-medium {isPoweredOn ? 'text-green-600' : 'text-red-600'}">
+							{isPoweredOn ? 'On' : 'Off'}
+						</span>
 					</div>
 					<div class="flex justify-between">
 						<span class="text-gray-600">Connection:</span>
