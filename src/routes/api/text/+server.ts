@@ -42,6 +42,7 @@ export const GET: RequestHandler = async () => {
 					textColor: defaultPreset[0].textColor,
 					backgroundColor: defaultPreset[0].backgroundColor,
 					fontSize: defaultPreset[0].fontSize,
+					textPosition: { x: defaultPreset[0].textPositionX, y: defaultPreset[0].textPositionY },
 					updatedAt: newDisplayRecord[0].updatedAt
 				});
 			} else {
@@ -67,6 +68,7 @@ export const GET: RequestHandler = async () => {
 					textColor: firstPreset[0].textColor,
 					backgroundColor: firstPreset[0].backgroundColor,
 					fontSize: firstPreset[0].fontSize,
+					textPosition: { x: firstPreset[0].textPositionX, y: firstPreset[0].textPositionY },
 					updatedAt: newDisplayRecord[0].updatedAt
 				});
 			}
@@ -96,6 +98,7 @@ export const GET: RequestHandler = async () => {
 					textColor: firstPreset[0].textColor,
 					backgroundColor: firstPreset[0].backgroundColor,
 					fontSize: firstPreset[0].fontSize,
+					textPosition: { x: firstPreset[0].textPositionX, y: firstPreset[0].textPositionY },
 					updatedAt: displayRecord[0].updatedAt
 				});
 			}
@@ -106,6 +109,7 @@ export const GET: RequestHandler = async () => {
 			textColor: activePreset[0].textColor,
 			backgroundColor: activePreset[0].backgroundColor,
 			fontSize: activePreset[0].fontSize,
+			textPosition: { x: activePreset[0].textPositionX, y: activePreset[0].textPositionY },
 			updatedAt: displayRecord[0].updatedAt
 		});
 	} catch (error) {
@@ -163,6 +167,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			textColor: activePreset[0].textColor,
 			backgroundColor: activePreset[0].backgroundColor,
 			fontSize: activePreset[0].fontSize,
+			textPosition: { x: activePreset[0].textPositionX, y: activePreset[0].textPositionY },
 			updatedAt: result[0].updatedAt
 		});
 	} catch (error) {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PresetResponse } from '$lib/types';
+	import Axis3d from '@lucide/svelte/icons/axis-3d';
 	import Button from './Button.svelte';
 
 	interface Props {
@@ -145,20 +146,29 @@
 			</div>
 
 			<!-- Preview -->
-			<div>
+			<!-- <div>
 				<div class="text-primary-text mb-2 block text-sm font-medium">Preview</div>
 				<div
-					class="border-primary/20 flex justify-center overflow-hidden rounded-lg border p-6"
-					style="background-color: {backgroundColor};"
+					class="border-primary/20 relative overflow-hidden rounded-lg border"
+					style="background-color: {backgroundColor}; height: 120px;"
 				>
 					<div
-						class="font-semibold whitespace-nowrap"
-						style="color: {textColor}; font-size: {fontSize / 1.8}px;"
+						class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform font-semibold whitespace-nowrap"
+						style="color: {textColor}; font-size: {fontSize / 2}px;"
 					>
 						Sample text preview
 					</div>
 				</div>
-			</div>
+			</div> -->
+
+			<a href="/app/settings/positional" class="w-full">
+				<Button variant="tertiary" class="w-full">
+					<div class="flex items-center gap-4">
+						<Axis3d class="size-5" />
+						Configure Text Position
+					</div>
+				</Button>
+			</a>
 
 			<!-- Action Buttons -->
 			<div class="flex gap-3 pt-4">

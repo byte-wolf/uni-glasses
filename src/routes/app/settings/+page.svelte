@@ -48,6 +48,7 @@
 				textColor: data.textColor,
 				backgroundColor: data.backgroundColor,
 				fontSize: data.fontSize || 48,
+				textPosition: activePreset.textPosition, // Keep existing position
 				isActive: true
 			};
 
@@ -70,7 +71,8 @@
 					content: currentText,
 					textColor: updatedPreset.textColor,
 					backgroundColor: updatedPreset.backgroundColor,
-					fontSize: updatedPreset.fontSize || 48
+					fontSize: updatedPreset.fontSize || 48,
+					textPosition: updatedPreset.textPosition || { x: 0, y: 0 }
 				});
 			}
 		} catch (error) {

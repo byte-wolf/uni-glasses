@@ -11,6 +11,8 @@ export const presets = sqliteTable('presets', {
 	textColor: text('text_color').notNull().default('#ffffff'),
 	backgroundColor: text('background_color').notNull().default('#1f2937'),
 	fontSize: integer('font_size').notNull().default(48),
+	textPositionX: integer('text_position_x').notNull().default(0),
+	textPositionY: integer('text_position_y').notNull().default(0),
 	isActive: integer('is_active', { mode: 'boolean' }).notNull().default(false),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()

@@ -10,9 +10,11 @@
 	let textColor = $state('#ffffff');
 	let backgroundColor = $state('#1f2937');
 	let fontSize = $state(48);
+	let textPosition = $state({ x: 0, y: 0 });
 	let connectionStatus = $state('connecting');
 	let reconnectAttempts = $state(0);
 	let maxReconnectAttempts = 5;
+	let textElement = $state<HTMLDivElement>();
 
 	function connectWebSocket() {
 		try {
@@ -29,6 +31,8 @@
 				textColor = data.textColor;
 				backgroundColor = data.backgroundColor;
 				fontSize = data.fontSize || 48;
+				textPosition = data.textPosition || { x: 0, y: 0 };
+				console.log('textPosition', textPosition);
 			});
 
 			socket.on('disconnect', () => {
@@ -67,6 +71,7 @@
 					textColor = data.textColor || '#ffffff';
 					backgroundColor = data.backgroundColor || '#1f2937';
 					fontSize = data.fontSize || 48;
+					textPosition = data.textPosition || { x: 0, y: 0 };
 				}
 			})
 			.catch((error) => {
@@ -74,6 +79,47 @@
 				displayText = 'Failed to load content';
 			});
 	}
+
+	// Calculate safe position that keeps text within bounds
+	function getSafePosition() {
+		if (!textElement) return { x: 50, y: 50 };
+
+		const container = textElement.parentElement;
+		if (!container) return { x: 50, y: 50 };
+
+		const containerRect = container.getBoundingClientRect();
+		const textRect = textElement.getBoundingClientRect();
+
+		// Calculate the maximum position as percentage, accounting for centering
+		// Since we use transform: translate(-50%, -50%), we need to consider
+		// that the element extends 50% of its size in each direction from the position point
+		const halfWidthPercent = (textRect.width / 2 / containerRect.width) * 100;
+		const halfHeightPercent = (textRect.height / 2 / containerRect.height) * 100;
+
+		const minX = halfWidthPercent;
+		const maxX = 100 - halfWidthPercent;
+		const minY = halfHeightPercent;
+		const maxY = 100 - halfHeightPercent;
+
+		// Convert textPosition (-50 to +50) to percentage (0 to 100)
+		const targetX = textPosition.x + 50;
+		const targetY = textPosition.y + 50;
+
+		// Clamp to safe bounds
+		const safeX = Math.max(minX, Math.min(maxX, targetX));
+		const safeY = Math.max(minY, Math.min(maxY, targetY));
+
+		return { x: safeX, y: safeY };
+	}
+
+	$effect(() => {
+		// Reactive effect to update position when textPosition or text content changes
+		if (textElement) {
+			const safePos = getSafePosition();
+			textElement.style.left = `${safePos.x}%`;
+			textElement.style.top = `${safePos.y}%`;
+		}
+	});
 
 	onMount(() => {
 		loadInitialText();
@@ -144,10 +190,17 @@
 	</header>
 
 	<!-- Main Display Area -->
-	<main class="flex flex-1 items-center justify-center p-8">
-		<div class="max-w-4xl text-center">
+	<main class="relative flex-1 overflow-hidden">
+		<div
+			bind:this={textElement}
+			class="absolute"
+			style="left: 50%; top: 50%; transform: translate(-50%, -50%);"
+		>
 			<div class="px-8 py-2 shadow-2xl" style="background-color: {backgroundColor};">
-				<div class="leading-tight font-bold" style="color: {textColor}; font-size: {fontSize}px;">
+				<div
+					class="leading-tight font-bold whitespace-nowrap"
+					style="color: {textColor}; font-size: {fontSize}px;"
+				>
 					{displayText}
 				</div>
 			</div>

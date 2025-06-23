@@ -10,10 +10,12 @@
 	let currentTextColor = $state('#ffffff');
 	let currentBackgroundColor = $state('#1f2937');
 	let currentFontSize = $state(48);
+	let currentTextPosition = $state({ x: 0, y: 0 });
 	let newText = $state('');
 	let newTextColor = $state('#ffffff');
 	let newBackgroundColor = $state('#1f2937');
 	let newFontSize = $state(48);
+	let newTextPosition = $state({ x: 0, y: 0 });
 	let isSaving = $state(false);
 	let saveStatus = $state('');
 	let lastUpdated = $state('');
@@ -37,10 +39,12 @@
 			currentTextColor = data.textColor || '#ffffff';
 			currentBackgroundColor = data.backgroundColor || '#1f2937';
 			currentFontSize = data.fontSize || 48;
+			currentTextPosition = data.textPosition || { x: 0, y: 0 };
 			newText = currentText;
 			newTextColor = currentTextColor;
 			newBackgroundColor = currentBackgroundColor;
 			newFontSize = currentFontSize;
+			newTextPosition = { ...currentTextPosition };
 			lastUpdated = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : '';
 		} catch (error) {
 			console.error('Failed to load current text:', error);
@@ -56,12 +60,15 @@
 			activePreset = data.find((p: PresetResponse) => p.isActive) || null;
 			selectedPresetId = activePreset?.id || null;
 
+			console.log('data', data);
+
 			// Update display settings with active preset values
 			if (activePreset) {
 				displaySettingsName = activePreset.name;
 				newTextColor = activePreset.textColor;
 				newBackgroundColor = activePreset.backgroundColor;
 				newFontSize = activePreset.fontSize || 48;
+				newTextPosition = activePreset.textPosition || { x: 0, y: 0 };
 			}
 		} catch (error) {
 			console.error('Failed to load presets:', error);
@@ -79,7 +86,8 @@
 				content: newText.trim(),
 				textColor: newTextColor,
 				backgroundColor: newBackgroundColor,
-				fontSize: newFontSize
+				fontSize: newFontSize,
+				textPosition: newTextPosition
 			};
 
 			socket.emit('text-update', updateData);
@@ -97,6 +105,8 @@
 				currentText = data.content;
 				currentTextColor = data.textColor;
 				currentBackgroundColor = data.backgroundColor;
+				currentFontSize = data.fontSize || 48;
+				currentTextPosition = data.textPosition || { x: 0, y: 0 };
 				lastUpdated = new Date(data.updatedAt).toLocaleString();
 				saveStatus = 'Text updated successfully!';
 				setTimeout(() => (saveStatus = ''), 3000);
@@ -109,9 +119,11 @@
 					currentTextColor = data.textColor;
 					currentBackgroundColor = data.backgroundColor;
 					currentFontSize = data.fontSize || 48;
+					currentTextPosition = data.textPosition || { x: 0, y: 0 };
 					newTextColor = data.textColor;
 					newBackgroundColor = data.backgroundColor;
 					newFontSize = data.fontSize || 48;
+					newTextPosition = { ...(data.textPosition || { x: 0, y: 0 }) };
 					lastUpdated = new Date(data.updatedAt).toLocaleString();
 
 					// Emit WebSocket update with current text and new styling
@@ -119,7 +131,8 @@
 						content: currentText,
 						textColor: data.textColor,
 						backgroundColor: data.backgroundColor,
-						fontSize: data.fontSize || 48
+						fontSize: data.fontSize || 48,
+						textPosition: data.textPosition || { x: 0, y: 0 }
 					});
 				}
 			} else {
@@ -152,9 +165,11 @@
 				currentTextColor = data.textColor;
 				currentBackgroundColor = data.backgroundColor;
 				currentFontSize = data.fontSize || 48;
+				currentTextPosition = data.textPosition || { x: 0, y: 0 };
 				newTextColor = data.textColor;
 				newBackgroundColor = data.backgroundColor;
 				newFontSize = data.fontSize || 48;
+				newTextPosition = { ...(data.textPosition || { x: 0, y: 0 }) };
 				displaySettingsName = data.name;
 				lastUpdated = new Date(data.updatedAt).toLocaleString();
 
@@ -163,7 +178,8 @@
 					content: currentText,
 					textColor: data.textColor,
 					backgroundColor: data.backgroundColor,
-					fontSize: data.fontSize || 48
+					fontSize: data.fontSize || 48,
+					textPosition: data.textPosition || { x: 0, y: 0 }
 				});
 
 				saveStatus = `Preset "${data.name}" activated!`;
@@ -200,6 +216,7 @@
 		newTextColor = '#ffffff';
 		newBackgroundColor = '#1f2937';
 		newFontSize = 48;
+		newTextPosition = { x: 0, y: 0 };
 	}
 
 	function openEditPresetModal(preset: PresetResponse) {
@@ -220,6 +237,7 @@
 				textColor: newTextColor,
 				backgroundColor: newBackgroundColor,
 				fontSize: newFontSize,
+				textPosition: newTextPosition,
 				isActive: true // Keep it active since we're editing the active preset
 			};
 
@@ -240,6 +258,8 @@
 				currentTextColor = data.textColor;
 				currentBackgroundColor = data.backgroundColor;
 				currentFontSize = data.fontSize || 48;
+
+				currentTextPosition = data.textPosition || { x: 0, y: 0 };
 				lastUpdated = new Date(data.updatedAt).toLocaleString();
 
 				// Emit WebSocket update with current text and new styling
@@ -247,7 +267,8 @@
 					content: currentText,
 					textColor: data.textColor,
 					backgroundColor: data.backgroundColor,
-					fontSize: data.fontSize || 48
+					fontSize: data.fontSize || 48,
+					textPosition: data.textPosition || { x: 0, y: 0 }
 				});
 
 				// Reload presets
@@ -266,6 +287,7 @@
 			newTextColor = activePreset.textColor;
 			newBackgroundColor = activePreset.backgroundColor;
 			newFontSize = activePreset.fontSize || 48;
+			newTextPosition = { ...(activePreset.textPosition || { x: 0, y: 0 }) };
 		}
 	}
 
@@ -278,6 +300,7 @@
 				textColor: newTextColor,
 				backgroundColor: newBackgroundColor,
 				fontSize: newFontSize,
+				textPosition: newTextPosition,
 				isActive: isCreatingPreset
 			};
 
@@ -303,9 +326,11 @@
 					currentTextColor = data.textColor;
 					currentBackgroundColor = data.backgroundColor;
 					currentFontSize = data.fontSize || 48;
+					currentTextPosition = data.textPosition || { x: 0, y: 0 };
 					newTextColor = data.textColor;
 					newBackgroundColor = data.backgroundColor;
 					newFontSize = data.fontSize || 48;
+					newTextPosition = { ...(data.textPosition || { x: 0, y: 0 }) };
 					lastUpdated = new Date(data.updatedAt).toLocaleString();
 
 					// Emit WebSocket update with current text and new styling
@@ -313,7 +338,8 @@
 						content: currentText,
 						textColor: data.textColor,
 						backgroundColor: data.backgroundColor,
-						fontSize: data.fontSize || 48
+						fontSize: data.fontSize || 48,
+						textPosition: data.textPosition || { x: 0, y: 0 }
 					});
 				}
 			}
@@ -358,7 +384,9 @@
 			newText.trim() !== currentText ||
 			newTextColor !== currentTextColor ||
 			newBackgroundColor !== currentBackgroundColor ||
-			newFontSize !== currentFontSize
+			newFontSize !== currentFontSize ||
+			newTextPosition.x !== currentTextPosition.x ||
+			newTextPosition.y !== currentTextPosition.y
 		);
 	}
 </script>
@@ -554,6 +582,56 @@
 									<span>120px</span>
 								</div>
 							</div>
+							<!-- Text Position Controls -->
+							<div class="mb-3 grid gap-2 md:grid-cols-2">
+								<div>
+									<label class="mb-1 block text-sm font-medium text-gray-700"
+										>Horizontal Position:</label
+									>
+									<input
+										type="range"
+										min="-50"
+										max="50"
+										step="1"
+										bind:value={newTextPosition.x}
+										class="w-full cursor-pointer"
+									/>
+									<div class="flex justify-between text-xs text-gray-500">
+										<span>Left</span>
+										<span class="font-medium">{newTextPosition.x}%</span>
+										<span>Right</span>
+									</div>
+								</div>
+								<div>
+									<label class="mb-1 block text-sm font-medium text-gray-700"
+										>Vertical Position:</label
+									>
+									<input
+										type="range"
+										min="-50"
+										max="50"
+										step="1"
+										bind:value={newTextPosition.y}
+										class="w-full cursor-pointer"
+									/>
+									<div class="flex justify-between text-xs text-gray-500">
+										<span>Up</span>
+										<span class="font-medium">{newTextPosition.y}%</span>
+										<span>Down</span>
+									</div>
+								</div>
+							</div>
+							<div class="mb-3">
+								<button
+									onclick={() => {
+										newTextPosition.x = 0;
+										newTextPosition.y = 0;
+									}}
+									class="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+								>
+									Reset to Center
+								</button>
+							</div>
 							<div class="flex gap-2">
 								<button
 									onclick={savePreset}
@@ -597,15 +675,21 @@
 						<div class="mb-6">
 							<label class="mb-2 block text-sm font-medium text-gray-700">Current Display:</label>
 							<div
-								class="rounded-lg border border-gray-200 p-4"
-								style="background-color: {currentBackgroundColor};"
+								class="relative overflow-hidden rounded-lg border border-gray-200 p-4"
+								style="background-color: {currentBackgroundColor}; height: 120px;"
 							>
 								<div
-									class="font-medium"
-									style="color: {currentTextColor}; font-size: {currentFontSize}px;"
+									class="absolute font-medium"
+									style="color: {currentTextColor}; font-size: {Math.min(
+										currentFontSize / 2,
+										24
+									)}px; left: 50%; top: 50%; transform: translate(calc(-50% + {currentTextPosition.x}%), calc(-50% + {currentTextPosition.y}%));"
 								>
 									{currentText || 'No text set'}
 								</div>
+							</div>
+							<div class="mt-1 text-xs text-gray-500">
+								Position: ({currentTextPosition.x}%, {currentTextPosition.y}%)
 							</div>
 						</div>
 
@@ -631,15 +715,21 @@
 						<div class="mb-6">
 							<label class="mb-2 block text-sm font-medium text-gray-700">Preview:</label>
 							<div
-								class="rounded-lg border border-gray-200 p-4"
-								style="background-color: {currentBackgroundColor};"
+								class="relative overflow-hidden rounded-lg border border-gray-200 p-4"
+								style="background-color: {currentBackgroundColor}; height: 120px;"
 							>
 								<div
-									class="font-medium"
-									style="color: {currentTextColor}; font-size: {currentFontSize}px;"
+									class="absolute font-medium"
+									style="color: {currentTextColor}; font-size: {Math.min(
+										currentFontSize / 2,
+										24
+									)}px; left: 50%; top: 50%; transform: translate(calc(-50% + {currentTextPosition.x}%), calc(-50% + {currentTextPosition.y}%));"
 								>
 									{newText || 'Enter text above to see preview'}
 								</div>
+							</div>
+							<div class="mt-1 text-xs text-gray-500">
+								Current position: ({currentTextPosition.x}%, {currentTextPosition.y}%)
 							</div>
 						</div>
 
@@ -659,6 +749,7 @@
 									newTextColor = currentTextColor;
 									newBackgroundColor = currentBackgroundColor;
 									newFontSize = currentFontSize;
+									newTextPosition = currentTextPosition;
 									saveStatus = '';
 								}}
 								disabled={isSaving}
@@ -768,19 +859,81 @@
 								</div>
 							</div>
 
+							<!-- Text Position Controls -->
+							<div class="mb-6">
+								<label class="mb-2 block text-sm font-medium text-gray-700">Text Position:</label>
+								<div class="grid gap-4 md:grid-cols-2">
+									<div>
+										<label for="settingsTextPositionX" class="mb-1 block text-xs text-gray-600">
+											Horizontal Position:
+										</label>
+										<input
+											id="settingsTextPositionX"
+											type="range"
+											min="-50"
+											max="50"
+											step="1"
+											bind:value={newTextPosition.x}
+											class="w-full cursor-pointer"
+										/>
+										<div class="flex justify-between text-xs text-gray-500">
+											<span>Left</span>
+											<span class="font-medium">{newTextPosition.x}%</span>
+											<span>Right</span>
+										</div>
+									</div>
+									<div>
+										<label for="settingsTextPositionY" class="mb-1 block text-xs text-gray-600">
+											Vertical Position:
+										</label>
+										<input
+											id="settingsTextPositionY"
+											type="range"
+											min="-50"
+											max="50"
+											step="1"
+											bind:value={newTextPosition.y}
+											class="w-full cursor-pointer"
+										/>
+										<div class="flex justify-between text-xs text-gray-500">
+											<span>Up</span>
+											<span class="font-medium">{newTextPosition.y}%</span>
+											<span>Down</span>
+										</div>
+									</div>
+								</div>
+								<div class="mt-3">
+									<button
+										onclick={() => {
+											newTextPosition.x = 0;
+											newTextPosition.y = 0;
+										}}
+										class="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+									>
+										Reset to Center
+									</button>
+								</div>
+							</div>
+
 							<!-- Settings Preview -->
 							<div class="mb-6">
 								<label class="mb-2 block text-sm font-medium text-gray-700">Preview:</label>
 								<div
-									class="rounded-lg border border-gray-200 p-4"
-									style="background-color: {newBackgroundColor};"
+									class="relative overflow-hidden rounded-lg border border-gray-200 p-4"
+									style="background-color: {newBackgroundColor}; height: 100px;"
 								>
 									<div
-										class="font-medium"
-										style="color: {newTextColor}; font-size: {newFontSize}px;"
+										class="absolute font-medium"
+										style="color: {newTextColor}; font-size: {Math.min(
+											newFontSize / 2,
+											24
+										)}px; left: 50%; top: 50%; transform: translate(calc(-50% + {newTextPosition.x}%), calc(-50% + {newTextPosition.y}%));"
 									>
 										{currentText || 'Sample text preview'}
 									</div>
+								</div>
+								<div class="mt-1 text-xs text-gray-500">
+									Position: ({newTextPosition.x}%, {newTextPosition.y}%)
 								</div>
 							</div>
 

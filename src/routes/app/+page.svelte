@@ -54,7 +54,8 @@
 					content: currentText,
 					textColor: data.textColor,
 					backgroundColor: data.backgroundColor,
-					fontSize: data.fontSize || 48
+					fontSize: data.fontSize || 48,
+					textAlign: data.textAlign || 'center'
 				});
 			}
 		} catch (error) {

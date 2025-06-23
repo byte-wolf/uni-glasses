@@ -3,6 +3,7 @@ export interface DisplayData {
 	textColor: string;
 	backgroundColor: string;
 	fontSize: number; // Font size in pixels, reasonable range: 16-120
+	textPosition?: { x: number; y: number }; // Text position relative to center (x: -100 to 100, y: -100 to 100)
 }
 
 export interface DisplayResponse extends DisplayData {
@@ -15,6 +16,7 @@ export interface PresetData {
 	textColor: string;
 	backgroundColor: string;
 	fontSize: number; // Font size in pixels, reasonable range: 16-120
+	textPosition?: { x: number; y: number }; // Text position relative to center (x: -100 to 100, y: -100 to 100)
 	isActive?: boolean;
 }
 
