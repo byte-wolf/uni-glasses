@@ -449,7 +449,10 @@
 	<!-- Header -->
 	<header class="border-b border-gray-200 bg-white p-4 shadow-sm">
 		<div class="mx-auto flex max-w-6xl items-center justify-between">
-			<h1 class="text-2xl font-bold text-gray-800">Wizard of Oz</h1>
+			<div class="flex flex-col">
+				<div class="text-sm leading-3 text-gray-600">Welcome</div>
+				<h1 class="text-2xl leading-6 font-bold text-gray-800">Wizard of Oz</h1>
+			</div>
 			<div class="flex items-center gap-4">
 				<span class="hidden text-gray-600 sm:block">
 					{lastUpdated ? `Last updated: ${lastUpdated}` : ''}
