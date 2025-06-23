@@ -451,21 +451,18 @@
 		<div class="mx-auto flex max-w-6xl items-center justify-between">
 			<h1 class="text-2xl font-bold text-gray-800">Wizard of Oz</h1>
 			<div class="flex items-center gap-4">
-				<span class="text-sm text-gray-600">
+				<span class="hidden text-gray-600 sm:block">
 					{lastUpdated ? `Last updated: ${lastUpdated}` : ''}
 				</span>
-				<button
-					onclick={() => goto('/')}
-					class="text-gray-600 transition-colors hover:text-gray-800"
-				>
-					← Back to Home
-				</button>
+				<a href="/" class="text-nowrap text-gray-600 transition-colors hover:text-gray-800">
+					← Home
+				</a>
 			</div>
 		</div>
 	</header>
 
 	<!-- Main Content -->
-	<main class="mx-auto max-w-6xl p-6">
+	<main class="mx-auto max-w-7xl p-2 pt-4">
 		<div class="grid gap-6 lg:grid-cols-3">
 			<!-- Quick Settings -->
 			<div class="space-y-4 lg:col-span-1">
@@ -483,7 +480,7 @@
 								: 'border-red-300 bg-red-50 text-red-700'}"
 							title={isPoweredOn ? 'Power Off Display' : 'Power On Display'}
 						>
-							<PowerIcon class="size-8" />
+							<PowerIcon class="size-7" />
 						</button>
 
 						<div class="flex items-center gap-2">
@@ -492,7 +489,7 @@
 								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Previous Preset"
 							>
-								<StepBackIcon class="size-8" />
+								<StepBackIcon class="size-7" />
 							</button>
 
 							<button
@@ -500,7 +497,7 @@
 								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Next Preset"
 							>
-								<StepForwardIcon class="size-8" />
+								<StepForwardIcon class="size-7" />
 							</button>
 						</div>
 
@@ -510,7 +507,7 @@
 								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Increase Font Size"
 							>
-								<PlusIcon class="size-8" />
+								<PlusIcon class="size-7" />
 							</button>
 
 							<button
@@ -518,7 +515,7 @@
 								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Decrease Font Size"
 							>
-								<MinusIcon class="size-8" />
+								<MinusIcon class="size-7" />
 							</button>
 						</div>
 					</div>
