@@ -55,7 +55,7 @@
 					textColor: data.textColor,
 					backgroundColor: data.backgroundColor,
 					fontSize: data.fontSize || 48,
-					textAlign: data.textAlign || 'center'
+					textPosition: data.textPosition || { x: 0, y: 0 }
 				});
 			}
 		} catch (error) {

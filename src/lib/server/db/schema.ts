@@ -26,6 +26,7 @@ export const displayText = sqliteTable('display_text', {
 	id: integer('id').primaryKey(),
 	content: text('content').notNull().default('Welcome to our display system!'),
 	activePresetId: integer('active_preset_id').references(() => presets.id),
+	isPoweredOn: integer('is_powered_on', { mode: 'boolean' }).notNull().default(true),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.notNull()
 		.$defaultFn(() => new Date())

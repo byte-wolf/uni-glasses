@@ -33,6 +33,7 @@ export const GET: RequestHandler = async () => {
 					.values({
 						content: 'Welcome to our display system!',
 						activePresetId: defaultPreset[0].id,
+						isPoweredOn: true,
 						updatedAt: new Date()
 					})
 					.returning();
@@ -43,6 +44,7 @@ export const GET: RequestHandler = async () => {
 					backgroundColor: defaultPreset[0].backgroundColor,
 					fontSize: defaultPreset[0].fontSize,
 					textPosition: { x: defaultPreset[0].textPositionX, y: defaultPreset[0].textPositionY },
+					isPoweredOn: newDisplayRecord[0].isPoweredOn,
 					updatedAt: newDisplayRecord[0].updatedAt
 				});
 			} else {
@@ -59,6 +61,7 @@ export const GET: RequestHandler = async () => {
 					.values({
 						content: 'Welcome to our display system!',
 						activePresetId: firstPreset[0].id,
+						isPoweredOn: true,
 						updatedAt: new Date()
 					})
 					.returning();
@@ -69,6 +72,7 @@ export const GET: RequestHandler = async () => {
 					backgroundColor: firstPreset[0].backgroundColor,
 					fontSize: firstPreset[0].fontSize,
 					textPosition: { x: firstPreset[0].textPositionX, y: firstPreset[0].textPositionY },
+					isPoweredOn: newDisplayRecord[0].isPoweredOn,
 					updatedAt: newDisplayRecord[0].updatedAt
 				});
 			}
@@ -99,6 +103,7 @@ export const GET: RequestHandler = async () => {
 					backgroundColor: firstPreset[0].backgroundColor,
 					fontSize: firstPreset[0].fontSize,
 					textPosition: { x: firstPreset[0].textPositionX, y: firstPreset[0].textPositionY },
+					isPoweredOn: displayRecord[0].isPoweredOn,
 					updatedAt: displayRecord[0].updatedAt
 				});
 			}
@@ -110,6 +115,7 @@ export const GET: RequestHandler = async () => {
 			backgroundColor: activePreset[0].backgroundColor,
 			fontSize: activePreset[0].fontSize,
 			textPosition: { x: activePreset[0].textPositionX, y: activePreset[0].textPositionY },
+			isPoweredOn: displayRecord[0].isPoweredOn,
 			updatedAt: displayRecord[0].updatedAt
 		});
 	} catch (error) {
@@ -168,6 +174,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			backgroundColor: activePreset[0].backgroundColor,
 			fontSize: activePreset[0].fontSize,
 			textPosition: { x: activePreset[0].textPositionX, y: activePreset[0].textPositionY },
+			isPoweredOn: result[0].isPoweredOn,
 			updatedAt: result[0].updatedAt
 		});
 	} catch (error) {

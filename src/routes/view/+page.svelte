@@ -11,7 +11,7 @@
 	let backgroundColor = $state('#1f2937');
 	let fontSize = $state(48);
 	let textPosition = $state({ x: 0, y: 0 });
-	let isPoweredOn = $state(true);
+	let isPoweredOn = $state(false);
 	let connectionStatus = $state('connecting');
 	let reconnectAttempts = $state(0);
 	let maxReconnectAttempts = 5;
@@ -197,10 +197,7 @@
 	</header>
 
 	<!-- Main Display Area -->
-	<main
-		class="relative flex-1 overflow-hidden"
-		style="background-color: {isPoweredOn ? 'transparent' : '#000000'};"
-	>
+	<main class="relative flex-1 overflow-hidden">
 		{#if isPoweredOn}
 			<div
 				bind:this={textElement}
@@ -216,8 +213,6 @@
 					</div>
 				</div>
 			</div>
-		{:else}
-			<div class="absolute inset-0 bg-black"></div>
 		{/if}
 	</main>
 </div>

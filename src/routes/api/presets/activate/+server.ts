@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
 import { presets, displayText } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import type { PresetResponse } from '$lib/types';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -49,7 +50,12 @@ export const POST: RequestHandler = async ({ request }) => {
 				.where(eq(displayText.id, displayRecord[0].id));
 		}
 
-		return json(activatedPreset[0]);
+		const transformedResult: PresetResponse = {
+			...activatedPreset[0],
+			textPosition: { x: activatedPreset[0].textPositionX, y: activatedPreset[0].textPositionY }
+		};
+
+		return json(transformedResult);
 	} catch (error) {
 		console.error('Failed to activate preset:', error);
 		return json({ error: 'Failed to activate preset' }, { status: 500 });

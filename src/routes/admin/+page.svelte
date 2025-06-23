@@ -407,24 +407,41 @@
 		saveDisplaySettings();
 	}
 
-	function togglePower() {
+	async function togglePower() {
 		isPoweredOn = !isPoweredOn;
 
-		// Emit WebSocket update immediately
-		socket.emit('toggle-power', { isPoweredOn });
+		try {
+			// Update power state in database
+			await fetch('/api/power', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ isPoweredOn })
+			});
 
-		// Also emit text-update with current content and power state
-		socket.emit('text-update', {
-			content: currentText,
-			textColor: currentTextColor,
-			backgroundColor: currentBackgroundColor,
-			fontSize: currentFontSize,
-			textPosition: currentTextPosition,
-			isPoweredOn
-		});
+			// Emit WebSocket update immediately
+			socket.emit('toggle-power', { isPoweredOn });
 
-		saveStatus = isPoweredOn ? 'Display powered on!' : 'Display powered off!';
-		setTimeout(() => (saveStatus = ''), 2000);
+			// Also emit text-update with current content and power state
+			socket.emit('text-update', {
+				content: currentText,
+				textColor: currentTextColor,
+				backgroundColor: currentBackgroundColor,
+				fontSize: currentFontSize,
+				textPosition: currentTextPosition,
+				isPoweredOn
+			});
+
+			saveStatus = isPoweredOn ? 'Display powered on!' : 'Display powered off!';
+			setTimeout(() => (saveStatus = ''), 2000);
+		} catch (error) {
+			console.error('Failed to update power state:', error);
+			// Revert the local state if the API call failed
+			isPoweredOn = !isPoweredOn;
+			saveStatus = 'Failed to update power state';
+			setTimeout(() => (saveStatus = ''), 2000);
+		}
 	}
 </script>
 
