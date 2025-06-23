@@ -478,47 +478,47 @@
 					<div class="flex items-center gap-4">
 						<button
 							onclick={togglePower}
-							class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50 {isPoweredOn
+							class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50 {isPoweredOn
 								? 'border-green-300 bg-green-50 text-green-700'
 								: 'border-red-300 bg-red-50 text-red-700'}"
 							title={isPoweredOn ? 'Power Off Display' : 'Power On Display'}
 						>
-							<PowerIcon class="size-6" />
+							<PowerIcon class="size-8" />
 						</button>
 
 						<div class="flex items-center gap-2">
 							<button
 								onclick={() => cyclePreset('prev')}
-								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Previous Preset"
 							>
-								<StepBackIcon class="size-6" />
+								<StepBackIcon class="size-8" />
 							</button>
 
 							<button
 								onclick={() => cyclePreset('next')}
-								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Next Preset"
 							>
-								<StepForwardIcon class="size-6" />
+								<StepForwardIcon class="size-8" />
 							</button>
 						</div>
 
 						<div class="flex items-center gap-2">
 							<button
 								onclick={() => increaseFontSize(1)}
-								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Increase Font Size"
 							>
-								<PlusIcon class="size-6" />
+								<PlusIcon class="size-8" />
 							</button>
 
 							<button
 								onclick={() => increaseFontSize(-1)}
-								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-2 hover:bg-gray-50"
+								class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
 								title="Decrease Font Size"
 							>
-								<MinusIcon class="size-6" />
+								<MinusIcon class="size-8" />
 							</button>
 						</div>
 					</div>
